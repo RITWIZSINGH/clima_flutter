@@ -1,9 +1,13 @@
 // ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, use_key_in_widget_constructors, unused_import, unused_local_variable, avoid_print
 
+import 'package:clima_flutter/screens/location_screen.dart';
 import 'package:clima_flutter/services/location.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
+import 'package:clima_flutter/services/networking.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+const kApiKey = 'b0c19dedc11dcc940e076e7af61b2d87';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -11,34 +15,36 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
-  
+  late double latitude;
+  late double longitude;
+
   @override
   void initState() {
     super.initState();
     getLocation();
   }
- void getLocation() async {
+
+  void getLocation() async {
     Location location = Location();
     await location.getCurrentLocation();
-    print(location.latitude);
-    print(location.longitude);
+    latitude = location.latitude;
+    longitude = location.longitude;
+    NetworkHelper networkHelper = NetworkHelper(
+        'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$kApiKey');
+
+    var weatherData = await networkHelper.getData();
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return LocationScreen();
+    }));
   }
- void getData() async {
- http.Response response= await http.get(Uri.parse('https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=b0c19dedc11dcc940e076e7af61b2d87'));
- print(response.body);
- print(response.statusCode);
- }
- 
+
   @override
   Widget build(BuildContext context) {
-    getData();
     return Scaffold(
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            // Add any onPressed logic here if needed
-          },
-          child: Text('Get Location'),
+        child: SpinKitDoubleBounce(
+          color: Colors.white,
+          size: 100.0,
         ),
       ),
     );
