@@ -1,5 +1,6 @@
 // ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_typing_uninitialized_variables, prefer_const_constructors_in_immutables, avoid_print, unused_import
 
+import 'package:clima_flutter/screens/city_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:clima_flutter/utilities/constants.dart';
 import 'package:clima_flutter/services/weather.dart';
@@ -16,7 +17,7 @@ class _LocationScreenState extends State<LocationScreen> {
   //Properties
   late String weatherIcon;
   late String weatherMessage;
-  late int temperature;
+  late int temperature = 0;
   late String cityName;
 
   //Weather model object
@@ -30,13 +31,14 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   //UPDATEUI function
-  void updateUI(dynamic weatherData) {
+  void updateUI(dynamic weatherData) async {
+    var data = await weatherData;
     setState(() {
-      var id = weatherData['weather'][0]['id'];
-      weatherIcon = weatherData.getWeatherIcon(id);
-      double temp = weatherData['main']['temp'];
+      var id = data['weather'][0]['id'];
+      weatherIcon = weatherModel.getWeatherIcon(id);
+      double temp = data['main']['temp'];
       temperature = temp.toInt();
-      cityName = weatherData['name'];
+      cityName = data['name'];
       weatherMessage = weatherModel.getMessage(temperature);
     });
   }
@@ -74,7 +76,12 @@ class _LocationScreenState extends State<LocationScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return CityScreen();
+                      }));
+                    },
                     child: Icon(
                       Icons.location_city,
                       size: 50.0,
