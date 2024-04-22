@@ -1,4 +1,4 @@
-// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_typing_uninitialized_variables, prefer_const_constructors_in_immutables, avoid_print, unused_import
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_typing_uninitialized_variables, prefer_const_constructors_in_immutables, avoid_print, unused_import, unused_local_variable
 
 import 'package:clima_flutter/screens/city_screen.dart';
 import 'package:flutter/material.dart';
@@ -76,11 +76,19 @@ class _LocationScreenState extends State<LocationScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return CityScreen();
-                      }));
+                    onPressed: () async {
+                      var typedName = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return CityScreen();
+                          },
+                        ),
+                      );
+                      if (typedName != null){
+                        var cityWeatherData = await weatherModel.getCityWeather(typedName);
+                        updateUI(cityWeatherData);
+                      }
                     },
                     child: Icon(
                       Icons.location_city,
